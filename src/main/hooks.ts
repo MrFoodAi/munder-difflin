@@ -19,6 +19,7 @@ import type { HarnessConfig } from './config';
 import type { ControlRegistry } from './control';
 import type { CircuitBreaker } from './breaker';
 import { estimateCostUsd } from './pricing';
+import { tm } from './i18nMain';
 import { validateHookEvent } from '../shared/hookEvents';
 
 /** Maximum JSON payload bytes in one newline-delimited hook frame. */
@@ -268,7 +269,8 @@ export class HookServer {
       this.retryTimer.unref();
     } else if (!this.alerted) {
       this.alerted = true;
-      this.notify('Hive hooks are down', `Nothing is listening at ${sock} (${code}). Every agent hook is being allowed and no cost is recorded until this recovers.`);
+      const lang = this.uiLang();
+      this.notify(tm(lang, 'notify.hooksDown', 'Hive hooks are down'), tm(lang, 'notify.hooksDownBody', 'Nothing is listening at {{sock}} ({{code}}). Every agent hook is being allowed and no cost is recorded until this recovers.', { sock, code }));
     }
   }
 
@@ -494,7 +496,7 @@ export class HookServer {
       // path bypassed terminal-draft/HITL safety and could spend credits while a
       // user was answering a question. Inbox files remain durable; the renderer
       // wakes the agent later through its guarded idle-only delivery path.
-      this.notify(agentId ?? 'Agent', 'finished — idle');
+      this.notify(agentId ?? tm(this.uiLang(), 'notify.agent', 'Agent'), tm(this.uiLang(), 'notify.finished', 'finished — idle'));
       this.emit(agentId, event, p);
       return {};
     }
@@ -588,7 +590,7 @@ export class HookServer {
       (p.notification_type === 'idle' ||
         (p.message ?? '').toLowerCase().includes('waiting for your input'))
     ) {
-      this.notify(agentId ?? 'Agent', p.message ?? 'needs your attention');
+      this.notify(agentId ?? tm(this.uiLang(), 'notify.agent', 'Agent'), p.message ?? tm(this.uiLang(), 'notify.attention', 'needs your attention'));
     }
 
     // Forward everything else to the renderer so avatars reflect real activity.
@@ -599,6 +601,11 @@ export class HookServer {
   /** Fire a native desktop notification — gated on the user's `notifications`
    *  setting. Only the OS toast is gated; the hive:hookEvent emit is always sent
    *  so avatars/UI stay live regardless. Best-effort: never throw into the hook. */
+  /** UI language mirrored from the renderer; unset → English. */
+  private uiLang(): string | undefined {
+    try { return this.getConfig()?.uiLanguage; } catch { return undefined; }
+  }
+
   private notify(title: string, body: string): void {
     if (!this.getConfig().notifications) return;
     try {

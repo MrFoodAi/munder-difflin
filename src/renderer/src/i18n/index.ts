@@ -129,4 +129,25 @@ void i18n
     returnNull: false
   });
 
+/**
+ * Mirror the UI language into the app config so the MAIN process (native menu,
+ * file dialogs, desktop notifications) can speak it too. Only after onboarding:
+ * a bare launch must never conjure a config.json. setGodName() re-emits
+ * 'languageChanged' with the same code, so the last mirrored value is cached.
+ */
+let mirroredLanguage: string | null = null;
+function mirrorLanguageToMain(lng: string | undefined): void {
+  if (!lng || lng === mirroredLanguage) return;
+  const api = typeof window !== 'undefined' ? window.cth : undefined;
+  if (!api?.getConfig || !api.updateConfig) return;
+  void api.getConfig().then((cfg) => {
+    if (!cfg?.onboardingComplete) return; // retry on the next languageChanged
+    mirroredLanguage = lng;
+    if (cfg.uiLanguage !== lng) return api.updateConfig({ uiLanguage: lng });
+    return undefined;
+  }).catch(() => { /* best-effort */ });
+}
+i18n.on('languageChanged', mirrorLanguageToMain);
+mirrorLanguageToMain(i18n.language);
+
 export default i18n;
