@@ -156,7 +156,7 @@ export function OfficeThemePicker({ config }: { config: HarnessConfig }) {
                     )}
                   </span>
                   <span style={{ fontSize: 11, lineHeight: '14px', color: 'var(--cth-ink-500)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {theme.blurb}
+                    {t(`extra.officeTheme.blurb.${theme.id}`, theme.blurb)}
                   </span>
                 </span>
               </button>
@@ -197,7 +197,7 @@ function ThemeSwitchConfirmModal({
   const { t } = useTranslation();
   const n = agents.length;
   const working = agents.filter((a) => a.status && !['idle', 'success', 'error'].includes(a.status)).length;
-  const godName = useStore.getState().agents.find((a) => a.isGod)?.name ?? 'the orchestrator';
+  const godName = useStore.getState().agents.find((a) => a.isGod)?.name ?? t('extra.toast.theOrchestrator', 'the orchestrator');
 
   return (
     <div

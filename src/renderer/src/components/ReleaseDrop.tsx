@@ -34,6 +34,7 @@
  * out here even though the drop itself holds none.
  */
 import { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { buildDropSrcDoc } from '../../../shared/releaseDrop';
 
 export interface ReleaseDropProps {
@@ -67,6 +68,7 @@ const MONO = '"JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monosp
 const REVEAL_TIMEOUT_MS = 2500;
 
 export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
+  const { t } = useTranslation();
   const srcDoc = useMemo(() => buildDropSrcDoc(html), [html]);
 
   // The loader covers the frame until it is ready to be seen. `revealed` latches
@@ -150,7 +152,7 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
           }}>
             Munder Difflin <span style={{ color: YELLOW }}>v{version.replace(/^v/, '')}</span>
             <span style={{ color: INK_FAINT, fontWeight: 500, marginLeft: 10, letterSpacing: '.12em' }}>
-              / release notes
+              {t('extra.releaseDrop.notes', '/ release notes')}
             </span>
           </span>
           <span aria-hidden style={{
@@ -162,7 +164,7 @@ export function ReleaseDrop({ version, html, onDismiss }: ReleaseDropProps) {
           <button
             onClick={onDismiss}
             aria-label="Close release notes"
-            title="Close (Esc)"
+            title={t('fileEditor.closeTitle')}
             style={{
               flexShrink: 0, width: 26, height: 26, padding: 0,
               background: PAPER, color: INK, border: `2px solid ${PAPER}`,

@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import type { CSSProperties } from 'react';
 import '@xterm/xterm/css/xterm.css';
 import { Icon } from './Icon';
@@ -125,6 +126,7 @@ export interface PtyTerminalViewProps {
 }
 
 export function PtyTerminalView({ ptyId, onStreamData, onUserPrompt, onToggleFullscreen, fullscreen, embedded }: PtyTerminalViewProps) {
+  const { t } = useTranslation();
   const hostRef = useRef<HTMLDivElement | null>(null);
   const onStreamDataRef = useRef(onStreamData);
   onStreamDataRef.current = onStreamData;
@@ -385,24 +387,24 @@ export function PtyTerminalView({ ptyId, onStreamData, onUserPrompt, onToggleFul
           <button
             onClick={() => zoom(-1)}
             disabled={fontSize <= MIN_FONT_SIZE}
-            title="Zoom out (Cmd -)"
+            title={t('extra.pty.zoomOut', 'Zoom out (Cmd -)')}
             style={zoomBtnStyle}
           >−</button>
           <button
             onClick={resetZoom}
-            title="Reset zoom (Cmd 0)"
+            title={t('extra.pty.zoomReset', 'Reset zoom (Cmd 0)')}
             style={{ ...zoomBtnStyle, width: 'auto', padding: '0 4px', minWidth: 28 }}
           >{fontSize}px</button>
           <button
             onClick={() => zoom(1)}
             disabled={fontSize >= MAX_FONT_SIZE}
-            title="Zoom in (Cmd +)"
+            title={t('extra.pty.zoomIn', 'Zoom in (Cmd +)')}
             style={zoomBtnStyle}
           >+</button>
           {fullscreen && onToggleFullscreen && (
             <button
               onClick={onToggleFullscreen}
-              title="Exit focus mode (Esc)"
+              title={t('fullscreenTerminal.exitFullscreen')}
               style={{ ...zoomBtnStyle, width: 22, height: 22, marginLeft: 4 }}
             >
               <Icon name="minimize" />

@@ -195,7 +195,7 @@ const NAV_SECTION_KEYS: Record<Section, string> = {
 
 export function SettingsModal({ config, onClose, initialSection }: SettingsModalProps) {
   const { t, i18n } = useTranslation();
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? t('extra.toast.theOrchestrator', 'the orchestrator');
   const [confirming, setConfirming] = useState(false);
   const [busy, setBusy] = useState(false);
   const [activeSection, setActiveSection] = useState<Section>(initialSection ?? 'General');
@@ -624,7 +624,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
         if (res.url) setTunnelUrl(res.url);
         setSlackNote(res.url ? 'listening' : (res.error ?? 'started, but tunnel unavailable'));
       } else {
-        setSlackNote(res.error ?? 'failed to start');
+        setSlackNote(res.error ?? t('extra.settings.failedStart', 'failed to start'));
       }
     } catch (e) {
       setSlackNote(e instanceof Error ? e.message : String(e));
@@ -651,7 +651,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setWebhookBusy(true); setWebhookNote('');
     try {
       const res = await triggersApi().saveWebhooks(list);
-      if (res && res.ok === false) { setWebhookNote(res.error ?? 'could not save'); return; }
+      if (res && res.ok === false) { setWebhookNote(res.error ?? t('mcpDefaults.couldNotSave')); return; }
       setWebhookNote('saved');
       setTimeout(() => setWebhookNote(''), 1500);
     } catch (e) {
@@ -674,7 +674,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
     } finally { setWebhookBusy(false); }
-    if (!secret) { setWebhookNote('could not generate a secret'); return; }
+    if (!secret) { setWebhookNote(t('extra.settings.noSecret', 'could not generate a secret')); return; }
     const entry: WebhookTrigger = {
       id: newWebhookId(),
       name: `Webhook ${webhookTriggers.length + 1}`,
@@ -699,10 +699,10 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     } catch (e) {
       setWebhookNote(e instanceof Error ? e.message : String(e));
     } finally { setWebhookBusy(false); }
-    if (!secret) { setWebhookNote('could not generate a secret'); return; }
+    if (!secret) { setWebhookNote(t('extra.settings.noSecret', 'could not generate a secret')); return; }
     setShownSecrets((s) => ({ ...s, [id]: true }));
     await patchWebhook(id, { secret });
-    setWebhookNote('new secret — copy it now');
+    setWebhookNote(t('extra.settings.newSecret', 'new secret — copy it now'));
   };
 
   const removeWebhook = async (id: string) => {
@@ -732,7 +732,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     setOrgBusy(true); setOrgNote('');
     try {
       const res = await triggersApi().setOrgTrigger(next);
-      if (res && res.ok === false) { setOrgNote(res.error ?? 'could not save'); return; }
+      if (res && res.ok === false) { setOrgNote(res.error ?? t('mcpDefaults.couldNotSave')); return; }
       setOrgNote('saved');
       setTimeout(() => setOrgNote(''), 1500);
     } catch (e) {
@@ -799,7 +799,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
     if (changeMode === 'fresh') clearLocalState();
     try {
       const res = await window.cth.changeHome(changeHome, changeMode);
-      if (!res.ok) { setChangeErr(res.error ?? 'Could not change the home folder.'); setChangeBusy(false); }
+      if (!res.ok) { setChangeErr(res.error ?? t('extra.settings.couldNotChangeHome', 'Could not change the home folder.')); setChangeBusy(false); }
       // ok === true never returns (the process relaunches).
     } catch (e) {
       setChangeErr(e instanceof Error ? e.message : String(e));
@@ -1274,16 +1274,16 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
                         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
                           <div style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                             <span style={{ fontSize: 13, lineHeight: '20px', color: 'var(--cth-ink-900)' }}>
-                              Who can add agents
+                              {t('extra.settings.whoCanAdd', 'Who can add agents')}
                             </span>
                             <span style={{ fontSize: 12, lineHeight: '16px', color: 'var(--cth-ink-500)' }}>
                               {orchSpawnOn
-                                ? `${godName} can hire on his own. Every agent he starts spends tokens you did not approve.`
-                                : `Only you. ${godName} can still ask, and his request waits in the queue instead of failing.`}
+                                ? t('extra.settings.godCanHire', { defaultValue: '{{godName}} can hire on his own. Every agent he starts spends tokens you did not approve.', godName })
+                                : t('extra.settings.onlyYou', { defaultValue: 'Only you. {{godName}} can still ask, and his request waits in the queue instead of failing.', godName })}
                             </span>
                           </div>
                           <PixelButton variant={orchSpawnOn ? 'primary' : 'secondary'} size="sm" onClick={toggleOrchSpawn}>
-                            {orchSpawnOn ? `me and ${godName}` : 'only me'}
+                            {orchSpawnOn ? t('extra.settings.meAnd', { defaultValue: 'me and {{godName}}', godName }) : t('extra.settings.onlyMe', 'only me')}
                           </PixelButton>
                         </div>
                       </div>
@@ -1497,7 +1497,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
                             boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
                             fontFamily: 'var(--cth-font-mono)', fontSize: 11, lineHeight: '16px',
                             color: 'var(--cth-ink-700)'
-                          }}>{SLACK_CONNECT_STEPS}</pre>
+                          }}>{t('extra.settings.slackSteps', SLACK_CONNECT_STEPS)}</pre>
                         )}
 
                         {slackEnabled && (
@@ -1664,7 +1664,7 @@ export function SettingsModal({ config, onClose, initialSection }: SettingsModal
                             boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
                             fontFamily: 'var(--cth-font-mono)', fontSize: 11, lineHeight: '16px',
                             color: 'var(--cth-ink-700)'
-                          }}>{webhookApiDoc(godName)}</pre>
+                          }}>{t('extra.settings.webhookDoc', { defaultValue: webhookApiDoc(godName), godName })}</pre>
                         )}
 
                         {/* Public surface warning. Loud, not buried. */}

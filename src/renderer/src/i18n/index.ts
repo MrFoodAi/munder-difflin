@@ -1,9 +1,10 @@
 /**
  * i18n bootstrap — react-i18next with inline JSON resources.
  *
- * English is the default language (and the fallback for any missing key).
+ * Italian is the default language in this fork; English remains the fallback
+ * for any missing key.
  * The user's choice is persisted in localStorage (`cth.language`). With nothing
- * saved the app starts in English, ALWAYS — it deliberately does not read
+ * saved the app starts in Italian, ALWAYS — it deliberately does not read
  * navigator.language. Auto-detect would change the UI out from under every
  * existing user on a non-English machine, who never asked for a translation and
  * may not want a partial one. Nothing moves until someone picks a language in
@@ -21,6 +22,7 @@ import { DEFAULT_GOD_NAME } from '@shared/godIdentity';
 import en from './locales/en.json';
 import zhCN from './locales/zh-CN.json';
 import ar from './locales/ar.json';
+import it from './locales/it.json';
 
 /**
  * The languages the Settings picker offers, in display order.
@@ -33,6 +35,7 @@ import ar from './locales/ar.json';
  * the renderer takes the same path it took before Arabic existed.
  */
 export const LANGUAGES = [
+  { code: 'it', label: 'Italiano', dir: 'ltr' },
   { code: 'en', label: 'English', dir: 'ltr' },
   { code: 'zh-CN', label: '简体中文', dir: 'ltr' },
   { code: 'ar', label: 'العربية', dir: 'rtl' }
@@ -89,13 +92,13 @@ export function setGodName(name: string | undefined | null): void {
   i18n.emit('languageChanged', i18n.language);
 }
 
-/** The saved choice, or English. Never the OS locale — see the note above. */
+/** The saved choice, or Italian (this fork's default). Never the OS locale — see the note above. */
 function detectLanguage(): string {
   try {
     const saved = window.localStorage.getItem(STORAGE_KEY);
     if (saved && SUPPORTED.includes(saved as LanguageCode)) return saved;
-  } catch { /* localStorage unavailable — English it is */ }
-  return 'en';
+  } catch { /* localStorage unavailable — Italian it is */ }
+  return 'it';
 }
 
 /** Switch language now and persist the choice for next launch. */
@@ -110,11 +113,12 @@ void i18n
     resources: {
       en: { translation: en },
       'zh-CN': { translation: zhCN },
-      ar: { translation: ar }
+      ar: { translation: ar },
+      it: { translation: it }
     },
     lng: detectLanguage(),
     fallbackLng: 'en',
-    supportedLngs: ['en', 'zh-CN', 'ar'],
+    supportedLngs: ['it', 'en', 'zh-CN', 'ar'],
     // Resources are bundled inline, so nothing ever suspends — the string is
     // there at init time. Keeping this false lets every component call
     // useTranslation() without wrapping the tree in <Suspense>.
@@ -124,5 +128,26 @@ void i18n
     interpolation: { escapeValue: false, defaultVariables: { godName: DEFAULT_GOD_NAME } },
     returnNull: false
   });
+
+/**
+ * Mirror the UI language into the app config so the MAIN process (native menu,
+ * file dialogs, desktop notifications) can speak it too. Only after onboarding:
+ * a bare launch must never conjure a config.json. setGodName() re-emits
+ * 'languageChanged' with the same code, so the last mirrored value is cached.
+ */
+let mirroredLanguage: string | null = null;
+function mirrorLanguageToMain(lng: string | undefined): void {
+  if (!lng || lng === mirroredLanguage) return;
+  const api = typeof window !== 'undefined' ? window.cth : undefined;
+  if (!api?.getConfig || !api.updateConfig) return;
+  void api.getConfig().then((cfg) => {
+    if (!cfg?.onboardingComplete) return; // retry on the next languageChanged
+    mirroredLanguage = lng;
+    if (cfg.uiLanguage !== lng) return api.updateConfig({ uiLanguage: lng });
+    return undefined;
+  }).catch(() => { /* best-effort */ });
+}
+i18n.on('languageChanged', mirrorLanguageToMain);
+mirrorLanguageToMain(i18n.language);
 
 export default i18n;

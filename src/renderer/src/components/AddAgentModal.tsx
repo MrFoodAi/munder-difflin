@@ -430,7 +430,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
     });
     if (!spawnRes.ok) {
       setBusy(false);
-      setError(spawnRes.error ?? 'spawn failed');
+      setError(spawnRes.error ?? tr('extra.addAgent.spawnFailed', 'spawn failed'));
       return;
     }
     // #2 — the requested resume session id wasn't found anywhere; main fell back
@@ -461,7 +461,7 @@ export function AddAgentModal({ onClose, config, onConfigChange }: AddAgentModal
       cwd: spawnedCwd,
       goal: goal.trim() || undefined,
       status: 'idle',
-      action: resuming && spawnRes.resumeNotFound ? 'session not found — fresh start' : 'starting up',
+      action: resuming && spawnRes.resumeNotFound ? tr('extra.addAgent.sessionNotFound', 'session not found — fresh start') : tr('extra.addAgent.startingUp', 'starting up'),
       progress: 0,
       currentStation: 'desk',
       ptyId,

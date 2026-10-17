@@ -1346,16 +1346,16 @@ export function OfficeFloor() {
             let mv: BoardMove | null = null;
             if (!old && (t.status === 'todo' || t.status === 'blocked')) {
               const actor = actorFor(undefined, true);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: 'pinning a new task 📌' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS[t.status], stand: t.status === 'blocked' ? PIN_STAND : TAKE_STAND, thought: i18n.t('extra.office.thought.pin', 'pinning a new task 📌') };
             } else if (oldS !== 'doing' && t.status === 'doing') {
               const actor = actorFor(t.assignee, false);
-              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: 'grabbing my task' };
+              if (actor && actor === t.assignee) mv = { kind: 'take', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.doing, stand: TAKE_STAND, thought: i18n.t('extra.office.thought.take', 'grabbing my task') };
             } else if (t.status === 'done' && oldS !== 'done') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: 'filing it as done ✔' };
+              if (actor) mv = { kind: 'archive', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.done, stand: ARCHIVE_STAND, thought: i18n.t('extra.office.thought.archive', 'filing it as done ✔') };
             } else if (t.status === 'blocked' && oldS !== 'blocked') {
               const actor = actorFor(old?.assignee ?? t.assignee, false);
-              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: 'this one is stuck 😤' };
+              if (actor) mv = { kind: 'pin', taskId: t.id, actorId: actor, after, carryColor: NOTE_COLORS.blocked, stand: PIN_STAND, thought: i18n.t('extra.office.thought.stuck', 'this one is stuck 😤') };
             }
             if (mv && !busyActors.has(mv.actorId) && !moveQueue.some((q) => q.actorId === mv!.actorId)) {
               if (!visualTasks.has(t.id) && mv.kind !== 'pin') visualTasks.set(t.id, { status: oldS ?? 'todo', assignee: old?.assignee });
@@ -1745,10 +1745,7 @@ export function OfficeFloor() {
       if (plan.action === 'give-up') {
         console.error(`[OfficeFloor] still no WebGL context after ${DEFAULT_MAX_INIT_RETRIES} retries:`, err);
         host.appendChild(floorNote(
-          'The office floor could not get a GPU context.\n\n' +
-          'The GPU may still be restarting, or too many terminals are\n' +
-          'using it at once. Close a few agent terminals, or restart\n' +
-          'the app, to bring the floor back.'));
+          i18n.t('extra.office.gpuGiveUp', 'The office floor could not get a GPU context.\n\nThe GPU may still be restarting, or too many terminals are\nusing it at once. Close a few agent terminals, or restart\nthe app, to bring the floor back.')));
         return;
       }
 

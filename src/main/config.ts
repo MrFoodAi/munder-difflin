@@ -305,6 +305,10 @@ export interface HarnessConfig {
    *  ("theme" key) at spawn so the TUI's truecolor palette matches. Scoped to
    *  harness agents only; the user's global Claude theme is never touched. */
   terminalTheme?: 'light' | 'dark';
+  /** UI language picked in the renderer (i18next code, e.g. 'it'), mirrored here
+   *  so the main process can localize the native menu, dialogs and toasts.
+   *  Unset = English. */
+  uiLanguage?: string;
   /** Anonymous product analytics (PostHog) — the exact events/properties are
    *  documented in TELEMETRY.md. Default ON (opt-out, like autoUpdate); builds
    *  without an injected key and environments with DO_NOT_TRACK set never send

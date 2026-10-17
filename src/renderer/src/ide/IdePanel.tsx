@@ -623,9 +623,9 @@ export function IdePanel() {
                   <div style={{
                     fontFamily: 'var(--cth-font-display)', fontSize: 8, textTransform: 'uppercase',
                     letterSpacing: 1, color: 'var(--cth-ink-700)'
-                  }}>nothing open</div>
+                  }}>{t('extra.ide.nothingOpen', 'nothing open')}</div>
                   <div style={{ fontFamily: 'var(--cth-font-ui)', fontSize: 13 }}>
-                    Pick a file from the tree to edit, or a changed file to diff.
+                    {t('extra.ide.pickFile', 'Pick a file from the tree to edit, or a changed file to diff.')}
                   </div>
                   <ShortcutHint />
                 </div>
@@ -645,7 +645,7 @@ export function IdePanel() {
 
               {activeTab?.mode === 'edit' && (() => {
                 const buf = editBuffers[activeTab.rel];
-                if (!buf || buf.status === 'loading') return <Centered>loading…</Centered>;
+                if (!buf || buf.status === 'loading') return <Centered>{t('fileTree.loading')}</Centered>;
                 if (buf.status === 'error') return <Centered tone="error">{buf.error}</Centered>;
                 const md = isMarkdown(activeTab.rel);
                 const view: MdView = md ? (mdViews[activeTab.rel] ?? defaultMdView()) : 'code';
@@ -844,6 +844,7 @@ function MdPane({ rel, root, source, split, onOpenMarkdownLink }: {
  * moment the pane has nothing to say, and it must not compete with an open file.
  */
 function ShortcutHint() {
+  const { t } = useTranslation();
   return (
     <div style={{
       marginTop: 10, display: 'grid', gap: 2, justifyItems: 'center',
@@ -852,7 +853,7 @@ function ShortcutHint() {
       {EDITOR_SHORTCUTS.map(([keys, label]) => (
         <div key={label} style={{ display: 'flex', gap: 6, alignItems: 'baseline' }}>
           <span style={{ fontFamily: 'var(--cth-font-mono)', color: 'var(--cth-ink-500)' }}>{keys}</span>
-          <span>{label}</span>
+          <span>{t(`extra.ide.shortcut.${label}`, label)}</span>
         </div>
       ))}
     </div>

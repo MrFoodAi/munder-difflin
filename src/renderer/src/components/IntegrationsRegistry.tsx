@@ -263,7 +263,7 @@ export function IntegrationsRegistry() {
         {/* Label */}
         <label style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
           <span style={fieldLabel}>{tr('integrations.label')}</span>
-          <input value={draft.label} onChange={(e) => patch({ label: e.target.value, ...(draft.isNew ? { id: slugify(e.target.value) } : {}) })} placeholder={`e.g. ${tpl?.label ?? 'My API'} (prod)`} style={inputStyle} />
+          <input value={draft.label} onChange={(e) => patch({ label: e.target.value, ...(draft.isNew ? { id: slugify(e.target.value) } : {}) })} placeholder={tr('extra.integrations.labelPlaceholder', { defaultValue: 'e.g. {{label}} (prod)', label: tpl?.label ?? 'My API' })} style={inputStyle} />
           <span style={hint}>{tr('integrations.labelHint')}: <code style={{ fontFamily: 'var(--cth-font-mono)' }}>{slugify(draft.id || draft.label) || '—'}</code>{draft.isNew ? '' : ` (${tr('integrations.fixed')})`}</span>
         </label>
 
@@ -279,13 +279,13 @@ export function IntegrationsRegistry() {
           <label style={{ display: 'flex', flexDirection: 'column', gap: 5, maxWidth: 260 }}>
             <span style={fieldLabel}>{tr('integrations.authentication')}</span>
             <select value={draft.authType} onChange={(e) => patch({ authType: e.target.value as IntegrationAuthType })} style={{ ...inputStyle, fontFamily: 'var(--cth-font-mono)' }}>
-              {CUSTOM_AUTH.map((a) => <option key={a} value={a}>{AUTH_LABEL[a]}</option>)}
+              {CUSTOM_AUTH.map((a) => <option key={a} value={a}>{tr(`extra.integrations.auth.${a}`, AUTH_LABEL[a])}</option>)}
             </select>
           </label>
         ) : (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 5 }}>
             <span style={fieldLabel}>{tr('integrations.authentication')}</span>
-            <span style={hint}>{AUTH_LABEL[draft.authType]} ({tr('integrations.setByTemplate')})</span>
+            <span style={hint}>{tr(`extra.integrations.auth.${draft.authType}`, AUTH_LABEL[draft.authType])} ({tr('integrations.setByTemplate')})</span>
           </div>
         )}
 

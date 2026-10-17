@@ -17,6 +17,7 @@ import {
   readConfig, writeConfig, setAgentTokenCap, resetConfig, onConfigWritten, ensureHarnessHome, ensureClaudePermissionsAccepted,
   modelForRole, OPS_STANDUP_MISSION, HEARTBEAT_MISSION, COMPACT_MAINTENANCE_MISSION, type HarnessConfig, type ScheduledMission
 } from './config';
+import { tm } from './i18nMain';
 import { listDir, readFileText, readFileBinary, writeFileText, statAbs, expandTilde } from './fs';
 import { normalizeWeekly, weeklyDelayMs } from '../shared/weeklySchedule';
 import {
@@ -1267,11 +1268,11 @@ function runBreakerBeat(progressWindowMs: number): void {
     } else if (d.action === 'constrain') {
       hive.send({ to: d.state.agentId, act: 'request', subject: 'Circuit breaker: constrain',
         body: `Automated guardrail escalated: ${reason}. Stop active work now: switch to read-only/plan, write a short plan of your next step, and send it to god for sign-off BEFORE running more tools.` }, 'breaker');
-      breakerToast(`${name} constrained`, reason);
+      breakerToast(L('notify.constrained', '{{name}} constrained', { name }), reason);
     } else if (d.action === 'stop') {
       const ptyId = ptyForAgent(d.state.agentId);
       if (ptyId) { try { ptyManager.kill(ptyId); } catch { /* already gone */ } teardownPty(ptyId); }
-      breakerToast(`${name} stopped by circuit breaker`, reason);
+      breakerToast(L('notify.stopped', '{{name}} stopped by circuit breaker', { name }), reason);
     }
   }
 }
@@ -2280,8 +2281,8 @@ ipcMain.handle('hire:drainPending', () => {
 // is validated independently; valid neighbours survive an invalid manifest.
 ipcMain.handle('hire:openFile', async () => {
   const res = await dialog.showOpenDialog({
-    title: 'Import hire manifests',
-    filters: [{ name: 'Hire manifest', extensions: ['json'] }],
+    title: L('dialog.importHires', 'Import hire manifests'),
+    filters: [{ name: L('dialog.hireManifest', 'Hire manifest'), extensions: ['json'] }],
     properties: ['openFile', 'multiSelections']
   });
   if (res.canceled || res.filePaths.length === 0) {
@@ -2422,11 +2423,13 @@ function createWindow(opts: { floor?: boolean } = {}): BrowserWindow {
       if (owned > 0) {
         const choice = dialog.showMessageBoxSync(win, {
           type: 'warning',
-          buttons: ['Close floor', 'Cancel'],
+          buttons: [L('dialog.closeFloor', 'Close floor'), L('dialog.cancel', 'Cancel')],
           defaultId: 1,
           cancelId: 1,
-          message: `Close this floor? ${owned} running terminal${owned === 1 ? '' : 's'} on it will be stopped.`,
-          detail: 'Other floors keep running.'
+          message: owned === 1
+            ? L('dialog.closeFloorOne', 'Close this floor? {{count}} running terminal on it will be stopped.', { count: owned })
+            : L('dialog.closeFloorMany', 'Close this floor? {{count}} running terminals on it will be stopped.', { count: owned }),
+          detail: L('dialog.otherFloors', 'Other floors keep running.')
         });
         if (choice === 1) e.preventDefault();
       }
@@ -2484,20 +2487,63 @@ function openFloor(): BrowserWindow | null {
  *  flag-off keeps Electron's default menu (zero behavior change). Uses standard
  *  role-based items so copy/paste/quit/etc. work per-platform, and adds the
  *  "New Floor" item (Cmd/Ctrl+Shift+N). */
+/** UI language mirrored from the renderer (config.uiLanguage); unset = English. */
+function uiLang(): string | undefined {
+  try { return readConfig().uiLanguage; } catch { return undefined; }
+}
+/** Main-process translation shorthand (native menu / dialogs / toasts). */
+function L(key: string, en: string, vars?: Record<string, string | number>): string {
+  return tm(uiLang(), key, en, vars);
+}
+
+/** True when the custom menu is needed: multi-window (for "New Floor") or a
+ *  non-English UI (Electron's default menu is English-only). */
+function wantsAppMenu(): boolean {
+  const lang = uiLang();
+  return !!readConfig().multiWindow || (!!lang && lang !== 'en');
+}
+
 function installAppMenu(): void {
   const isMac = process.platform === 'darwin';
+  const lang = uiLang();
+  const localized = !!lang && lang !== 'en';
+  // Role items keep Electron's own (English) labels unless a translation is
+  // active, so the English menu is byte-for-byte what it always was.
+  const lb = (key: string, en: string, vars?: Record<string, string | number>): { label?: string } =>
+    localized ? { label: tm(lang, key, en, vars) } : {};
+  const sep = { type: 'separator' as const };
+  const appName = app.name;
   const newFloorItem = {
-    label: 'New Floor',
+    label: L('menu.newFloor', 'New Floor'),
     accelerator: 'CmdOrCtrl+Shift+N',
     click: () => { openFloor(); }
   };
+  const withFloor = !!readConfig().multiWindow;
+  const fileHead: Electron.MenuItemConstructorOptions[] = withFloor ? [newFloorItem, sep] : [];
   const template: Electron.MenuItemConstructorOptions[] = [
-    ...(isMac ? [{ role: 'appMenu' as const }] : []),
+    ...(isMac
+      ? [localized
+          ? {
+              label: appName,
+              submenu: [
+                { role: 'about' as const, ...lb('menu.about', 'About {{app}}', { app: appName }) },
+                sep,
+                { role: 'services' as const, ...lb('menu.services', 'Services') },
+                sep,
+                { role: 'hide' as const, ...lb('menu.hide', 'Hide {{app}}', { app: appName }) },
+                { role: 'hideOthers' as const, ...lb('menu.hideOthers', 'Hide Others') },
+                { role: 'unhide' as const, ...lb('menu.unhide', 'Show All') },
+                sep,
+                { role: 'quit' as const, ...lb('menu.quitApp', 'Quit {{app}}', { app: appName }) }
+              ]
+            }
+          : { role: 'appMenu' as const }]
+      : []),
     {
-      label: 'File',
+      label: L('menu.file', 'File'),
       submenu: isMac
-        ? [newFloorItem, { type: 'separator' as const }, { role: 'close' as const }]
-        : [newFloorItem, { type: 'separator' as const }, { role: 'quit' as const }]
+        ? [...fileHead, { role: 'close' as const, ...lb('menu.close', 'Close Window') }]
+        : [...fileHead, { role: 'quit' as const, ...lb('menu.quit', 'Quit') }]
     },
     // The Edit menu is spelled out rather than `{ role: 'editMenu' }` for one
     // reason: `registerAccelerator: false` on the clipboard items.
@@ -2516,19 +2562,50 @@ function installAppMenu(): void {
     // handler and the textarea's native paste event both read the clipboard
     // synchronously, inside the keystroke, before any restore can land.
     {
-      label: 'Edit',
+      label: L('menu.edit', 'Edit'),
       submenu: [
-        { role: 'undo' as const, registerAccelerator: false },
-        { role: 'redo' as const, registerAccelerator: false },
-        { type: 'separator' as const },
-        { role: 'cut' as const, registerAccelerator: false },
-        { role: 'copy' as const, registerAccelerator: false },
-        { role: 'paste' as const, registerAccelerator: false },
-        { role: 'selectAll' as const, registerAccelerator: false }
+        { role: 'undo' as const, registerAccelerator: false, ...lb('menu.undo', 'Undo') },
+        { role: 'redo' as const, registerAccelerator: false, ...lb('menu.redo', 'Redo') },
+        sep,
+        { role: 'cut' as const, registerAccelerator: false, ...lb('menu.cut', 'Cut') },
+        { role: 'copy' as const, registerAccelerator: false, ...lb('menu.copy', 'Copy') },
+        { role: 'paste' as const, registerAccelerator: false, ...lb('menu.paste', 'Paste') },
+        { role: 'selectAll' as const, registerAccelerator: false, ...lb('menu.selectAll', 'Select All') }
       ]
     },
-    { role: 'viewMenu' },
-    { role: 'windowMenu' }
+    localized
+      ? {
+          label: L('menu.view', 'View'),
+          submenu: [
+            { role: 'reload' as const, ...lb('menu.reload', 'Reload') },
+            { role: 'forceReload' as const, ...lb('menu.forceReload', 'Force Reload') },
+            { role: 'toggleDevTools' as const, ...lb('menu.devTools', 'Toggle Developer Tools') },
+            sep,
+            { role: 'resetZoom' as const, ...lb('menu.resetZoom', 'Actual Size') },
+            { role: 'zoomIn' as const, ...lb('menu.zoomIn', 'Zoom In') },
+            { role: 'zoomOut' as const, ...lb('menu.zoomOut', 'Zoom Out') },
+            sep,
+            { role: 'togglefullscreen' as const, ...lb('menu.fullscreen', 'Toggle Full Screen') }
+          ]
+        }
+      : { role: 'viewMenu' },
+    localized
+      ? {
+          label: L('menu.window', 'Window'),
+          role: 'window' as const,
+          submenu: isMac
+            ? [
+                { role: 'minimize' as const, ...lb('menu.minimize', 'Minimize') },
+                { role: 'zoom' as const, ...lb('menu.zoom', 'Zoom') },
+                sep,
+                { role: 'front' as const, ...lb('menu.front', 'Bring All to Front') }
+              ]
+            : [
+                { role: 'minimize' as const, ...lb('menu.minimize', 'Minimize') },
+                { role: 'close' as const, ...lb('menu.close', 'Close Window') }
+              ]
+        }
+      : { role: 'windowMenu' }
   ];
   Menu.setApplicationMenu(Menu.buildFromTemplate(template));
 }
@@ -2801,7 +2878,7 @@ async function spawnAgentCore(opts: AgentSpawnOptions, owner: Electron.WebConten
       // A degraded spawn (proxy bridge never bound) is told to the user the same
       // way breaker escalations are: a native toast, gated on the notifications
       // setting. The hive already logged it and pushed hive:degraded to the floor.
-      if (inj.degraded) breakerToast('Agent running degraded', inj.degraded);
+      if (inj.degraded) breakerToast(L('notify.degraded', 'Agent running degraded'), inj.degraded);
       // Point the agent's mempalace CLI at the shared palace + the `kg` CLI at the
       // enterprise knowledge store (both no-ops / empty when their flags are off).
       opts.env = { ...(opts.env ?? {}), ...inj.env, ...memory.env(), ...knowledge.env() };
@@ -3111,7 +3188,7 @@ ipcMain.handle('dialog:chooseFolder', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openDirectory', 'createDirectory'],
-    title: 'Pick a folder'
+    title: L('dialog.pickFolder', 'Pick a folder')
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   return { ok: true as const, path: res.filePaths[0] };
@@ -3230,6 +3307,12 @@ ipcMain.handle('config:update', (_evt, patch: Partial<HarnessConfig>) => {
   // config per tick so it gates immediately; this is for the PROMPT, which is
   // built per spawn, so flipping the toggle reaches god the next time he starts.
   if (typeof patch?.orchestratorMaySpawn === 'boolean') hive.setOrchestratorMaySpawn(patch.orchestratorMaySpawn);
+  // Renderer language changed → rebuild the native menu in that language. A
+  // switch back to English with multi-window off still keeps the (English)
+  // custom menu for the rest of the session; the default returns on relaunch.
+  if (typeof patch?.uiLanguage === 'string' && (wantsAppMenu() || Menu.getApplicationMenu())) {
+    try { installAppMenu(); } catch (e) { console.error('[menu] reinstall after language change:', e); }
+  }
   if (!hiveWasEnabled && hive.enabled()) {
     console.log('[hive] harnessHome configured — bootstrapping hive services');
     try { bootstrapHiveServices(); } catch (e) { console.error('[hive] bootstrap after onboarding:', e); }
@@ -3702,7 +3785,7 @@ ipcMain.handle('kg:addFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Add documents to the Knowledge Graph'
+    title: L('dialog.addKgDocs', 'Add documents to the Knowledge Graph')
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
   const results = res.filePaths.map((srcPath) => {
@@ -3725,10 +3808,10 @@ ipcMain.handle('dialog:attachFiles', async (evt) => {
   if (!win) return { ok: false as const, error: 'no window' };
   const res = await dialog.showOpenDialog(win, {
     properties: ['openFile', 'multiSelections'],
-    title: 'Attach images or files',
+    title: L('dialog.attachFiles', 'Attach images or files'),
     filters: [
-      { name: 'Images', extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
-      { name: 'All Files', extensions: ['*'] }
+      { name: L('dialog.images', 'Images'), extensions: ['png', 'jpg', 'jpeg', 'gif', 'webp', 'bmp', 'svg', 'heic', 'tiff', 'avif'] },
+      { name: L('dialog.allFiles', 'All Files'), extensions: ['*'] }
     ]
   });
   if (res.canceled || res.filePaths.length === 0) return { ok: false as const, error: 'cancelled' };
@@ -5319,7 +5402,7 @@ function healthCheckPtys(reason: string, awayMs: number | null): void {
   const away = awayMs != null ? ` (away ~${Math.round(awayMs / 1000)}s)` : '';
   if (dead.length) {
     console.warn(`[power] ${reason}${away}: ${dead.length}/${ptys.length} PTY(s) look wedged (process gone):`, dead.join(', '));
-    breakerToast('Agents need a restart', `${dead.length} agent terminal(s) didn't survive sleep — re-open them to resume.`);
+    breakerToast(L('notify.needRestart', 'Agents need a restart'), L('notify.deadAfterSleep', "{{count}} agent terminal(s) didn't survive sleep — re-open them to resume.", { count: dead.length }));
   } else {
     console.log(`[power] ${reason}${away}: ${ptys.length} PTY(s) healthy`);
   }
@@ -5427,7 +5510,7 @@ app.whenReady().then(() => {
   powerMonitor.on('lock-screen', () => { lastSuspendAt = Date.now(); console.log('[power] lock-screen'); });
   // Multi-window floors (opt-in): install the menu carrying "New Floor". When
   // off, the app keeps Electron's default menu — zero behavior change.
-  if (readConfig().multiWindow) installAppMenu();
+  if (wantsAppMenu()) installAppMenu();
   createWindow();
   // Auto-start the Slack webhook server when configured. Best-effort: a tunnel
   // failure (offline) is logged, not fatal. The tunnel URL is ephemeral and
