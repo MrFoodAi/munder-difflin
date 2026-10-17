@@ -347,7 +347,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
   const { t } = useTranslation();
   const rtl = useRtl();
   const agents = useStore((s) => s.agents);
-  const godName = agents.find((a) => a.isGod)?.name ?? 'the orchestrator';
+  const godName = agents.find((a) => a.isGod)?.name ?? t('extra.toast.theOrchestrator', 'the orchestrator');
   const select = useStore((s) => s.select);
   const updateAgent = useStore((s) => s.updateAgent);
   const toolCounts = useStore((s) => s.toolCounts);
@@ -428,7 +428,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       const provider = opts.provider ?? previousProvider;
       let resume = opts.resume === true && provider === previousProvider;
       if (opts.resume && !resume && !opts.resumeOptional) {
-        throw new Error('Cannot resume a session through a different provider.');
+        throw new Error(t('extra.cc.cannotResume', 'Cannot resume a session through a different provider.'));
       }
       let resumeSessionId: string | undefined;
       if (resume) {
@@ -467,7 +467,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
       // `no pty: <id>`. Treating that as fatal aborted before the respawn and
       // turned the one situation the button exists for into a dead end.
       if (!killed.ok && !/^no pty:/.test(killed.error ?? '')) {
-        throw new Error(killed.error ?? 'Could not stop the current process.');
+        throw new Error(killed.error ?? t('extra.cc.couldNotStop', 'Could not stop the current process.'));
       }
       if (!resume) {
         resetTerminal(a.ptyId);
@@ -496,7 +496,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         resumeSessionId,
         requireResume: resume
       });
-      if (!res.ok) throw new Error(res.error ?? 'Restart failed.');
+      if (!res.ok) throw new Error(res.error ?? t('commandCenter.restartFailed'));
       if (resume && res.resumed !== true) {
         throw new Error('Resume was refused; no replacement session was accepted.');
       }
@@ -516,7 +516,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         updateAgent(a.id, {
           terminalGeneration: (a.terminalGeneration ?? 0) + 1,
           status: 'idle',
-          action: 'recreating terminal…'
+          action: t('extra.cc.recreating', 'recreating terminal…')
         });
       }
       if (res.ok) {
@@ -533,7 +533,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
               provider,
               model,
               status: 'idle' as const,
-              action: 'continuing…'
+              action: t('extra.cc.continuing', 'continuing…')
             }
           : {
               command: command.trim(),
@@ -581,7 +581,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
 
   const fetchIssues = async () => {
     const repo = issueRepo || repos[0];
-    if (!repo) { setIssuesError('No repo selected.'); return; }
+    if (!repo) { setIssuesError(t('commandCenter.noRepoSelected')); return; }
     setIssuesLoading(true);
     setIssuesError(null);
     try {
@@ -590,7 +590,7 @@ function FloorTab({ seed }: { seed: { text: string; seq: number } }) {
         setIssues((res.issues ?? []).slice(0, 10));
       } else {
         setIssues([]);
-        setIssuesError(res.error ?? 'Failed to fetch issues.');
+        setIssuesError(res.error ?? t('commandCenter.fetchFailed'));
       }
     } catch (e) {
       setIssues([]);

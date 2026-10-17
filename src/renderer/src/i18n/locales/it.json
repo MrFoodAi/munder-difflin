@@ -1405,5 +1405,237 @@
     "viewSource": "vedi sorgente",
     "loading": "caricamento immagine…",
     "decodeFailed": "impossibile decodificare questa immagine — il file potrebbe essere corrotto o avere un nome errato"
+  },
+  "extra": {
+    "app": {
+      "lightTheme": "Tema chiaro",
+      "darkTheme": "Tema scuro",
+      "settings": "Impostazioni",
+      "focusMode": "Modalità focus",
+      "toggleFocus": "Attiva/disattiva modalità focus",
+      "emptyFloor": "PIANO VUOTO",
+      "emptyFloorBody": "Ancora nessun agente sul piano. Creane uno per vedere qui l'output reale di claude in streaming.",
+      "wakingFloor": "IL PIANO SI STA SVEGLIANDO",
+      "clockingIn": "{{name}} sta timbrando il cartellino.",
+      "terminalLands": "Il terminale apparirà qui appena si sarà seduto.",
+      "noAgentSelected": "NESSUN AGENTE SELEZIONATO",
+      "spawnFromStrip": "Crea un agente dalla barra qui sotto.",
+      "terminalAndBar": "Il terminale e la barra dei comandi appariranno qui.",
+      "autoOn": "modalità auto attiva",
+      "autoOff": "modalità auto disattiva"
+    },
+    "codeEditor": {
+      "noFile": "Nessun file aperto",
+      "pickFile": "Scegli un file dall'albero per visualizzarlo qui."
+    },
+    "common": {
+      "copyAbsPath": "Copia il percorso assoluto",
+      "unknownError": "errore sconosciuto"
+    },
+    "editAgent": {
+      "title": "MODIFICA AGENTE",
+      "engineHint": "provider · modello · prossimo riavvio",
+      "engineNote": "Le modifiche al motore vengono salvate per il prossimo riavvio. Usa Centro di comando → Piano per riavviare subito una sessione attiva su un nuovo provider/modello.",
+      "descPlaceholder": "a cosa serve questo agente"
+    },
+    "focus": {
+      "title": "MUNDER DIFFLIN · MODALITÀ FOCUS",
+      "noNote": "nessuna nota",
+      "privateNote": "NOTA PRIVATA"
+    },
+    "hive": {
+      "couldNotOpen": "Impossibile aprire quella cartella.",
+      "title": "SELEZIONA UNA CONFIGURAZIONE DELL'HARNESS",
+      "intro": "Una configurazione dell'harness è la cartella in cui l'app conserva tutto ciò che riguarda un workspace — le sue impostazioni, i tuoi agenti e la loro memoria, attività, trigger e cronologia. Ogni configurazione è separata e autonoma, quindi puoi usare configurazioni diverse in parallelo. Apri quella su cui stavi lavorando, passa a un'altra o creane una nuova.",
+      "current": "ATTUALE",
+      "recent": "RECENTI",
+      "switchTo": "Passa a {{path}} (ricarica l'app)",
+      "opening": "apertura…",
+      "switch": "passa →",
+      "openingReload": "Apertura di {{name}} — l'app verrà ricaricata…",
+      "openExisting": "apri configurazione esistente…",
+      "createNew": "crea nuova configurazione…"
+    },
+    "onboarding": {
+      "badge": {
+        "installed": "INSTALLATO",
+        "installs-on-first-run": "INSTALLATO AL PRIMO AVVIO",
+        "not-installable": "NON INSTALLATO"
+      },
+      "engineMissing": "{{label}} non è installato su questo computer e l'app non ha un programma di installazione per esso, quindi {{godName}} non è potuto partire. Installalo prima, poi premi \"controlla di nuovo\". Oppure scegli Claude Code, che si installa da solo al primo avvio.",
+      "checking": "verifica...",
+      "checkAgain": "controlla di nuovo",
+      "installInstructions": "istruzioni di installazione"
+    },
+    "pty": {
+      "zoomOut": "Riduci zoom (Cmd -)",
+      "zoomReset": "Reimposta zoom (Cmd 0)",
+      "zoomIn": "Aumenta zoom (Cmd +)"
+    },
+    "quit": {
+      "closingTimeTitle": "ORARIO DI CHIUSURA",
+      "quittingTitle": "USCIRE ORA?",
+      "saved": "PIANO SALVATO — A DOMANI",
+      "stillWrapping": "ANCORA IN CHIUSURA…",
+      "wrapping": "CHIUSURA DEL PIANO IN CORSO",
+      "savedBody": "Ogni agente ha salvato la propria memoria e l'orchestratore ha confermato lo spegnimento. L'harness si chiuderà da solo tra un momento.",
+      "wrappingBody": "L'orchestratore ha annunciato l'orario di chiusura. Ogni worker mette da parte il proprio lavoro, salva la memoria e lo conferma — l'app si chiude solo dopo che l'orchestratore ha verificato che non andrà perso nulla.",
+      "workersConfirmed": "{{acked}} / {{total}} WORKER HANNO CONFERMATO",
+      "waitingOrch": " — IN ATTESA DELL'ORCHESTRATORE",
+      "noWorkers": "NESSUN WORKER SUL PIANO — IN ATTESA DELL'ORCHESTRATORE",
+      "takingWhile": "Ci sta mettendo un po' (un agente potrebbe essere nel mezzo di una compattazione o di una chiamata a uno strumento). Continua ad aspettare, oppure forza l'uscita accettando la perdita di dati.",
+      "backToWork": "annulla — torna al lavoro",
+      "killing": "chiusura forzata...",
+      "forceQuit": "forza uscita ora",
+      "stillRunningOne": "{{count}} AGENTE ANCORA IN ESECUZIONE",
+      "stillRunningMany": "{{count}} AGENTI ANCORA IN ESECUZIONE",
+      "bodyOne": "Chiudere l'harness terminerà la sessione claude in esecuzione e scarterà ogni progresso non salvato che teneva in memoria. La cronologia della conversazione all'interno della sessione va persa quando il PTY termina.",
+      "bodyMany": "Chiudere l'harness terminerà tutte le {{count}} sessioni claude in esecuzione e scarterà ogni progresso non salvato che tenevano in memoria. La cronologia della conversazione all'interno di ogni sessione va persa quando il PTY termina.",
+      "tip": "Suggerimento: l'orario di chiusura è il modo sicuro per uscire — l'orchestratore fa sì che ogni agente committi il proprio lavoro e salvi la memoria, e l'app si chiude da sola quando tutto il piano ha confermato. Nessuna perdita di dati.",
+      "couldNotStart": "Impossibile avviare l'orario di chiusura.",
+      "keepRunning": "lasciali in esecuzione",
+      "closingTime": "orario di chiusura",
+      "killOne": "terminalo ed esci",
+      "killAll": "termina tutti ed esci"
+    },
+    "recent": {
+      "label": "recenti"
+    },
+    "releaseDrop": {
+      "notes": "/ note di rilascio"
+    },
+    "hero": {
+      "isOut": "È uscita la v{{version}}",
+      "downloadTitle": "Scarica il programma di installazione e sostituisci l'app manualmente. L'aggiornamento automatico è in Aggiornamenti qui sotto.",
+      "download": "scarica v{{version}}",
+      "off": "% SCONTO"
+    },
+    "splitter": {
+      "title": "Trascina per ridimensionare · doppio clic per reimpostare"
+    },
+    "updateBadge": {
+      "checkAria": "Versione {{v}} — controlla aggiornamenti",
+      "clickDownload": "Clicca per scaricare la v{{version}}",
+      "downloadLatest": "Scarica l'ultima versione e sostituisci l'app che hai. Preferisci che l'app si aggiorni da sola? Impostazioni → Aggiornamenti.",
+      "onOs": "Su {{os}}",
+      "installAria": "Installa l'aggiornamento",
+      "downloading": "La v{{version}} è in download nel tuo browser.",
+      "whenLands": "Al termine, chiudi questa app e installa la nuova versione sopra quella attuale. Aprila e scegli lo stesso progetto. I tuoi agenti, la memoria e le impostazioni restano dove sono.",
+      "gotIt": "capito",
+      "latest": "Stai usando l'ultima versione.",
+      "newest": "La v{{v}} è la release più recente. Controllato proprio ora."
+    },
+    "updateToast": {
+      "downloaded": "Aggiornamento v{{version}} scaricato",
+      "available": "È disponibile la v{{version}}",
+      "restartHint": "Riavvia Munder Difflin quando vuoi per applicarlo — nulla si riavvia da solo.",
+      "manualHint": "Questa installazione non può aggiornarsi da sola — scarica la nuova build dalla pagina delle release.",
+      "whatsNew": "Novità",
+      "readMore": "Scopri di più",
+      "star": "⭐ Lasciaci una stella su GitHub",
+      "later": "più tardi",
+      "restart": "riavvia per aggiornare",
+      "download": "scarica {{version}}",
+      "openReleases": "apri le release"
+    },
+    "ide": {
+      "nothingOpen": "nulla di aperto",
+      "pickFile": "Scegli un file dall'albero da modificare, o un file modificato per vederne il diff.",
+      "shortcut": {
+        "find in file": "cerca nel file",
+        "replace": "sostituisci",
+        "command palette": "tavolozza dei comandi",
+        "go to line": "vai alla riga",
+        "go to symbol": "vai al simbolo"
+      },
+      "loadingEditor": "caricamento editor…"
+    },
+    "toast": {
+      "theOrchestrator": "l'orchestratore",
+      "completed": "completato",
+      "dismiss": "Chiudi"
+    },
+    "agentDetail": {
+      "editTip": "Modifica {{name}}: nome e aspetto, il motore su cui gira e il briefing che gli spiega a cosa serve.",
+      "editAria": "Modifica questo agente"
+    },
+    "terminal": {
+      "live": "live · pipe-pane"
+    },
+    "memoryGraph": {
+      "noMessages": "Ancora nessun messaggio registrato — l'hive è tranquillo. Gli agenti sono mostrati come elenco.",
+      "escalations": "richieste inoltrate all'umano",
+      "broadcast": "messaggi a tutti"
+    },
+    "booting": {
+      "title": "TIMBRATURA IN CORSO",
+      "body": "{{name}} si sta sistemando nell'ufficio d'angolo e sta preparando il piano. Resisti ancora un attimo…"
+    },
+    "settings": {
+      "slackSteps": "Collega Munder Difflin a Slack\n\n1. api.slack.com/apps -> Create New App -> From scratch. Chiamala\n   \"Munder Difflin\" e scegli il tuo workspace.\n2. Basic Information -> Signing Secret -> copialo nel campo\n   \"Signing secret\" qui.\n3. OAuth & Permissions -> Bot Token Scopes: aggiungi\n     chat:write          (l'ufficio risponde nel thread)\n     channels:history    (legge i messaggi dei canali pubblici)\n     groups:history      (legge i messaggi dei canali privati)\n   Install to workspace, poi copia il Bot User OAuth Token\n   (xoxb-...) nel campo \"Token del bot\" qui.\n4. Premi Avvia (sotto) per lanciare il webhook e ottenere il tuo\n   Request URL.\n5. Event Subscriptions -> Enable Events -> Request URL: incolla il\n   Request URL da qui e attendi la spunta verde di Slack (Verified).\n6. Event Subscriptions -> \"Subscribe to bot events\": aggiungi\n     message.channels\n     message.groups\n7. Event Subscriptions -> \"Subscribe to events on behalf of users\"\n   (aggiungi prima lo User Token Scope corrispondente channels:history / groups:history\n   se Slack lo chiede): aggiungi\n     message.channels\n     message.groups\n8. Save Changes, reinstalla se Slack lo chiede, poi invita il bot\n   nel tuo canale:  /invite @MunderDifflin",
+      "webhookDoc": "API dei webhook\n\nOgni webhook ha il proprio URL, il proprio secret e la propria modalità. Condividono\nun unico server e un unico tunnel; l'id nel percorso indica quale stai chiamando.\n\nAvviare lavoro (POST <tunnel>/<webhookId>):\n  header  x-md-webhook-secret: <il secret di quel webhook>\n  body    {\"message\": \"fai X per me\", \"title\": \"titolo breve facoltativo\",\n           \"kind\": \"directive\" | \"communication\", \"from\": \"chi sta chiamando\"}\n  -> 200  {\"ok\": true, \"token\": \"<token di capacità>\", \"taskId\": \"<id scheda>\"}\n  -> 202  {\"ok\": true, \"status\": \"awaiting approval\"}\n\nControllare lo stato (GET <tunnel>/<webhookId>):\n  header  x-md-webhook-token: <token>     (oppure  ?token=<token>)\n  -> 200  {\"ok\": true, \"status\": \"todo|doing|blocked|done\",\n           \"title\": \"...\", \"result\": \"<riepilogo o null>\"}\n\nLa modalità decide quale delle due risposte ottieni:\n  allow all           instradato direttamente -> 200\n  communication only  le comunicazioni passano; una direttiva riceve 202 awaiting approval\n  strict              tutto riceve 202 awaiting approval\n\nUn 202 significa che il messaggio è parcheggiato in Cronologia trigger finché non lo approvi;\nil token che hai ricevuto continua a leggere quell'attività una volta instradata. Il secret\nautorizza nuovo lavoro, il token legge solo lo stato di un'attività. Mantienili entrambi privati.\n\nOgni webhook verifica i body rispetto al proprio schema JSON — modificalo nella\nscheda Trigger del Centro di comando di {{godName}}.",
+      "couldNotChangeHome": "Impossibile cambiare la cartella home.",
+      "failedStart": "avvio non riuscito",
+      "noSecret": "impossibile generare un secret",
+      "newSecret": "nuovo secret — copialo ora",
+      "whoCanAdd": "Chi può aggiungere agenti",
+      "godCanHire": "{{godName}} può assumere da solo. Ogni agente che avvia consuma token che non hai approvato.",
+      "onlyYou": "Solo tu. {{godName}} può comunque chiedere, e la sua richiesta resta in coda invece di fallire.",
+      "meAnd": "io e {{godName}}",
+      "onlyMe": "solo io"
+    },
+    "office": {
+      "thought": {
+        "pin": "appendo una nuova attività 📌",
+        "take": "prendo la mia attività",
+        "archive": "la archivio come fatta ✔",
+        "stuck": "questa è bloccata 😤"
+      },
+      "gpuGiveUp": "Il piano dell'ufficio non è riuscito a ottenere un contesto GPU.\n\nLa GPU potrebbe essere ancora in riavvio, oppure troppi terminali\nla stanno usando contemporaneamente. Chiudi qualche terminale degli agenti,\no riavvia l'app, per ripristinare il piano."
+    },
+    "integrations": {
+      "auth": {
+        "none": "Nessuna (API pubblica)",
+        "bearer": "Token Bearer",
+        "header": "Header personalizzato",
+        "github": "GitHub"
+      },
+      "labelPlaceholder": "es. {{label}} (prod)"
+    },
+    "officeTheme": {
+      "blurb": {
+        "office": "Dunder Mifflin — il piano originale",
+        "friends": "Il Central Perk",
+        "brooklyn99": "La sala comune del 99° distretto",
+        "siliconvalley": "L'Hacker Hostel",
+        "got": "La sala del trono della Fortezza Rossa",
+        "hogwarts": "La Sala Grande di Hogwarts"
+      }
+    },
+    "addAgent": {
+      "spawnFailed": "creazione non riuscita",
+      "sessionNotFound": "sessione non trovata — nuovo avvio",
+      "startingUp": "avvio in corso"
+    },
+    "nameEditor": {
+      "couldNotRename": "Impossibile rinominare l'agente",
+      "dblClick": "{{name}} — doppio clic per rinominare",
+      "rename": "Rinomina {{name}}"
+    },
+    "cc": {
+      "recreating": "ricreazione del terminale…",
+      "continuing": "ripresa…",
+      "cannotResume": "Impossibile riprendere una sessione tramite un provider diverso.",
+      "couldNotStop": "Impossibile fermare il processo corrente."
+    },
+    "hold": {
+      "couldNotSet": "impossibile impostare la sospensione",
+      "endTip": "Termina il 1:1. {{godName}} può di nuovo affidare lavoro a {{name}}.",
+      "takeTip": "Prendi da parte {{name}}. {{godName}} smette di affidargli lavoro finché non lo termini. A differenza degli altri due pulsanti, questo non limita l'agente: continua a girare e a risponderti.",
+      "endAria": "Termina il 1:1 e restituisci questo agente a {{godName}}",
+      "takeAria": "Prendi da parte questo agente per un 1:1",
+      "failed": "1:1 non riuscito",
+      "in": "in 1:1"
+    }
   }
 }

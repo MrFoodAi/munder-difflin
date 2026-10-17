@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PixelButton } from './PixelButton';
 import { Icon } from './Icon';
 import { useStore } from '@/store/store';
@@ -22,8 +23,9 @@ import { useStore } from '@/store/store';
  * work to itself is not a state worth having.
  */
 export function AgentHoldButton({ agentId }: { agentId: string }) {
+  const { t } = useTranslation();
   const agent = useStore((s) => s.agents.find((a) => a.id === agentId));
-  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? 'the orchestrator';
+  const godName = useStore((s) => s.agents.find((a) => a.isGod)?.name) ?? t('extra.toast.theOrchestrator', 'the orchestrator');
   const [busy, setBusy] = useState(false);
   /** Last failure, shown on the button itself. A control that silently does
    *  nothing is worse than one that says why. */
@@ -66,7 +68,7 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
           // optimistically would show a hold Michael never heard about.
           .then((r) => {
             if (r?.ok) { setErr(null); useStore.getState().updateAgent(agentId, { onHold: !on }); }
-            else setErr(r?.error ?? 'could not set the hold');
+            else setErr(r?.error ?? t('extra.hold.couldNotSet', 'could not set the hold'));
           })
           .catch((e: unknown) => setErr(e instanceof Error ? e.message : String(e)))
           .finally(() => setBusy(false));
@@ -75,12 +77,12 @@ export function AgentHoldButton({ agentId }: { agentId: string }) {
       <span
         className="cth-tip cth-tip-wrap"
         data-tip={err ? err : on
-          ? `End the 1:1. ${godName} can hand ${agent.name} work again.`
-          : `Take ${agent.name} aside. ${godName} stops sending them work until you end it. Unlike the two buttons here, this does not restrain the agent: they keep running and keep answering you.`}
-        aria-label={on ? `End the 1:1 and release this agent to ${godName}` : 'Take this agent aside for a 1:1'}
+          ? t('extra.hold.endTip', { defaultValue: 'End the 1:1. {{godName}} can hand {{name}} work again.', godName, name: agent.name })
+          : t('extra.hold.takeTip', { defaultValue: 'Take {{name}} aside. {{godName}} stops sending them work until you end it. Unlike the two buttons here, this does not restrain the agent: they keep running and keep answering you.', godName, name: agent.name })}
+        aria-label={on ? t('extra.hold.endAria', { defaultValue: 'End the 1:1 and release this agent to {{godName}}', godName }) : t('extra.hold.takeAria', 'Take this agent aside for a 1:1')}
         style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}
       >
-        <Icon name={on ? 'pause' : 'play'} /> {err ? '1:1 failed' : on ? 'in 1:1' : '1:1'}
+        <Icon name={on ? 'pause' : 'play'} /> {err ? t('extra.hold.failed', '1:1 failed') : on ? t('extra.hold.in', 'in 1:1') : '1:1'}
       </span>
     </PixelButton>
   );

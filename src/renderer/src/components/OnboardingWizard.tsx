@@ -476,7 +476,7 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                               color: bad ? 'var(--cth-ink-500)' : 'var(--cth-ink-900)',
                               boxShadow: 'inset 0 0 0 1px var(--cth-ink-300)',
                               fontFamily: 'var(--cth-font-display)', flexShrink: 0
-                            }}>{badge}</span>
+                            }}>{t(`extra.onboarding.badge.${a.state}`, badge)}</span>
                           );
                         })()}
                         {p.id === 'claude' && (
@@ -532,14 +532,14 @@ export function OnboardingWizard({ onComplete }: OnboardingWizardProps) {
                     background: 'var(--cth-paper-100)', boxShadow: 'inset 0 0 0 2px var(--cth-ink-900)',
                     fontSize: 12, lineHeight: '17px', color: 'var(--cth-ink-900)'
                   }}>
-                    <span>{engineAvailabilityMessage(selectedEngine, providerPreset(godProvider).label)}</span>
+                    <span>{engineAvailabilityMessage(selectedEngine, providerPreset(godProvider).label) && t('extra.onboarding.engineMissing', { defaultValue: '{{label}} is not installed on this computer and the app has no installer for it, so {{godName}} could not start. Install it first, then press "check again". Or pick Claude Code, which installs itself on first run.', label: providerPreset(godProvider).label })}</span>
                     <div style={{ display: 'flex', gap: 8, alignItems: 'center', flexWrap: 'wrap' }}>
                       <PixelButton variant="secondary" size="sm" onClick={() => { void probeEngines(); }} disabled={probing}>
-                        {probing ? 'checking...' : 'check again'}
+                        {probing ? t('extra.onboarding.checking', 'checking...') : t('extra.onboarding.checkAgain', 'check again')}
                       </PixelButton>
                       {selectedEngine.docsUrl && (
                         <PixelButton variant="ghost" size="sm" onClick={() => { void window.cth.openExternal(selectedEngine.docsUrl!); }}>
-                          install instructions
+                          {t('extra.onboarding.installInstructions', 'install instructions')}
                         </PixelButton>
                       )}
                     </div>

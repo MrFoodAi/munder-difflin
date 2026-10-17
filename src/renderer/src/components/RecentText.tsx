@@ -1,4 +1,5 @@
 import { useTypewriter } from '@/hooks/useTypewriter';
+import { useTranslation } from 'react-i18next';
 import type { AccentColorName } from '@/design/tokens';
 
 export interface RecentTextProps {
@@ -13,6 +14,7 @@ export interface RecentTextProps {
  * uses while it's still composing — and disappears only when text is empty.
  */
 export function RecentText({ accent, text, seed }: RecentTextProps) {
+  const { t } = useTranslation();
   const { shown, done } = useTypewriter(text, seed);
   if (!text) return null;
   return (
@@ -31,7 +33,7 @@ export function RecentText({ accent, text, seed }: RecentTextProps) {
         color: 'var(--cth-ink-700)',
         textTransform: 'uppercase'
       }}>
-        <span>recent</span>
+        <span>{t('extra.recent.label', 'recent')}</span>
         <span style={{
           display: 'inline-flex', alignItems: 'center', gap: 4,
           color: done ? 'var(--cth-ink-500)' : `var(--cth-${accent})`

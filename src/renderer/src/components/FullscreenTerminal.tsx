@@ -308,7 +308,7 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
         <span style={{
           fontFamily: 'var(--cth-font-display)', fontSize: 12, lineHeight: '20px',
           color: 'var(--cth-ink-900)'
-        }}>MUNDER DIFFLIN · FOCUS MODE</span>
+        }}>{t('extra.focus.title', 'MUNDER DIFFLIN · FOCUS MODE')}</span>
         {/* Same top-right controls as the main title bar — fullscreen covers
             it, so theme / exit-fullscreen / IDE must live here too. */}
         <div className="cth-titlebar-nodrag" style={{ marginLeft: 'auto', display: 'flex', alignItems: 'center', gap: 12 }}>
@@ -359,8 +359,8 @@ export function FullscreenTerminal({ config }: FullscreenTerminalProps) {
           <button
             className="cth-settings-btn"
             onClick={() => window.dispatchEvent(new CustomEvent('cth:open-settings'))}
-            title="Settings"
-            aria-label="Settings"
+            title={t('extra.app.settings', 'Settings')}
+            aria-label={t('extra.app.settings', 'Settings')}
             style={{
               display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
               width: 28, height: 28, padding: 0,
@@ -840,7 +840,7 @@ function SidebarRow({
               <span style={{
                 fontSize: scale.note, lineHeight: 1.35,
                 color: 'var(--cth-ink-300)', fontStyle: 'italic'
-              }}>no note</span>
+              }}>{t('extra.focus.noNote', 'no note')}</span>
             )}
           </div>
         </div>
@@ -873,7 +873,7 @@ function SidebarRow({
             fontSize: noteLabelSize,
             lineHeight: `${Math.round(noteLabelSize * 1.5)}px`,
             color: 'var(--cth-ink-700)'
-          }}>PRIVATE NOTE</div>
+          }}>{t('extra.focus.privateNote', 'PRIVATE NOTE')}</div>
           {/* A textarea, not an input: the note is a bullet list, so Enter has
               to make a new line rather than doing nothing. autoFocus is safe
               now that opening is an explicit click, not a pointer fly-by. */}
@@ -909,7 +909,7 @@ function SidebarRow({
           />
           <div style={{
             marginTop: 5, fontSize: 10, color: 'var(--cth-ink-500)'
-          }}>one line = one bullet · esc to close</div>
+          }}>{t('agentStrip.oneLineOneBullet')}</div>
         </div>
         </>,
         document.body
