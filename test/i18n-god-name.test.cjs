@@ -17,7 +17,7 @@ const path = require('node:path');
 const root = path.join(__dirname, '..');
 const read = (p) => fs.readFileSync(path.join(root, p), 'utf8');
 const locale = (l) => JSON.parse(read(`src/renderer/src/i18n/locales/${l}.json`));
-const LOCALES = ['en', 'zh-CN'];
+const LOCALES = ['en', 'zh-CN', 'it'];
 
 function flatten(obj, pre = '', out = {}) {
   for (const [k, v] of Object.entries(obj)) {
@@ -92,12 +92,12 @@ test('every {{placeholder}} in en has the same placeholders in zh-CN', () => {
 
 // --- the language default ---------------------------------------------------
 
-test('with nothing saved the app starts in English, never the OS locale', () => {
+test('with nothing saved the app starts in Italian (this fork), never the OS locale', () => {
   const src = read('src/renderer/src/i18n/index.ts');
   const fn = src.slice(src.indexOf('function detectLanguage'));
   const body = fn.slice(0, fn.indexOf('\n}'));
   assert.doesNotMatch(body, /navigator/, 'detectLanguage reads the OS locale again');
-  assert.match(body, /return 'en';/, 'detectLanguage does not fall back to English');
+  assert.match(body, /return 'it';/, 'detectLanguage does not fall back to Italian');
 });
 
 test('godName reaches i18next as a default variable, so no call site must pass it', () => {
@@ -113,4 +113,19 @@ test('something actually calls setGodName, or the wiring is dead', () => {
   assert.match(hook, /setGodName\(/);
   assert.match(hook, /isGod/);
   assert.match(read('src/renderer/src/App.tsx'), /useGodNameSync\(\)/);
+});
+
+test('it carries every key en has (extra inline-default keys are allowed)', () => {
+  const en = Object.keys(flatten(locale('en')));
+  const it = flatten(locale('it'));
+  const missing = en.filter((k) => !(k in it));
+  assert.deepEqual(missing, [], `it.json is missing: ${missing.join(', ')}`);
+});
+
+test('every {{placeholder}} in en has the same placeholders in it', () => {
+  const en = flatten(locale('en'));
+  const it = flatten(locale('it'));
+  const ph = (v) => (text(v).match(/\{\{\w+\}\}/g) || []).sort().join(',');
+  const drift = Object.keys(en).filter((k) => k in it && ph(en[k]) !== ph(it[k]));
+  assert.deepEqual(drift, [], `placeholder drift:\n  ${drift.join('\n  ')}`);
 });
